@@ -23,7 +23,7 @@ func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
 	var buffer []byte
 	var wg sync.WaitGroup
 	ch := make(chan []byte)
-	for {
+	for true {
 		wg.Add(1)
 		go read(&wg, sockOne, buffer, ch)
 		wg.Wait()
