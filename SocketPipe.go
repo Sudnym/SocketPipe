@@ -6,30 +6,29 @@ import (
 	"net"
 )
 
-func Pipe(sockOne net.Conn, sockTwo net.Conn) {
-	go handleSocks(sockOne, sockTwo)
-	handleSocks(sockTwo, sockOne)
+func Pipe(sockOne net.Conn, sockTwo net.Conn, delimiter byte) {
+	go handleSocks(sockOne, sockTwo, delimiter)
+	handleSocks(sockTwo, sockOne, delimiter)
 }
-func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
+func handleSocks(sockOne net.Conn, sockTwo net.Conn, delimiter byte) {
 	var buffer []byte
-	ch := make(chan []byte)
 	for true {
-		buffer, isClosed := read(sockOne, buffer, ch)
+		buffer, isClosed := read(sockOne, buffer, delimiter)
 		if isClosed {
-			sockTwo.Write([]byte("Other Client Closed\t"))
+			sockTwo.Write(append([]byte("Other Client Closed"), delimiter))
 			return
 		}
 		_, err := sockTwo.Write(buffer)
 		if err == io.EOF {
+			sockOne.Write(append([]byte("Other Client Closed"), delimiter))
 			return
-			sockOne.Write([]byte("Other Client Closed\t"))
 		}
 	}
 }
-func read(sock net.Conn, buffer []byte, ch chan []byte) ([]byte, bool) {
+func read(sock net.Conn, buffer []byte, delimiter byte) ([]byte, bool) {
 	reader := bufio.NewReader(sock)
 	isClosed := false
-	buffer, err := reader.ReadBytes('\t')
+	buffer, err := reader.ReadBytes(delimiter)
 	if err == io.EOF {
 		isClosed = true
 	}
