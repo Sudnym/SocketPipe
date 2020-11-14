@@ -27,9 +27,8 @@ func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
 func read(sock net.Conn, buffer []byte, ch chan []byte) ([]byte, bool) {
 	reader := bufio.NewReader(sock)
 	isClosed := false
-	var one []byte
-	buffer, _ = reader.ReadBytes('\n')
-	if _, err := sock.Read(one); err == io.EOF {
+	buffer, err := reader.ReadBytes('\n')
+	if err == io.EOF {
 		isClosed = true
 	}
 	return buffer, isClosed
