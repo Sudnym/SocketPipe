@@ -1,6 +1,7 @@
 package SocketPipe
 
 import (
+	"fmt"
 	"net"
 	"time"
 )
@@ -22,5 +23,6 @@ func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
 	_ = sockOne.SetReadDeadline(time.Now().Add(5))
 	_ = sockTwo.SetWriteDeadline(time.Now().Add(5))
 	_, _ = sockOne.Read(buffer)
+	fmt.Print(string(buffer))
 	_, _ = sockTwo.Write(buffer)
 }
