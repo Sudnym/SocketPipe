@@ -33,7 +33,10 @@ func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
 }
 func read(wg *sync.WaitGroup, sock net.Conn, buffer []byte, ch chan []byte) {
 	defer wg.Done()
-	buffer, err := ioutil.ReadAll(sock)
+	var buff []byte
+	for string(buff) == string(buffer) {
+		buffer, _ = ioutil.ReadAll(sock)
+	}
+	fmt.Println(buffer)
 	ch <- buffer
-	check(err)
 }
