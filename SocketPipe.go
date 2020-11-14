@@ -13,6 +13,8 @@ func check(err error) {
 }
 
 func Pipe(sockOne net.Conn, sockTwo net.Conn) {
+	fmt.Println(sockOne.RemoteAddr())
+	fmt.Println(sockTwo.RemoteAddr())
 	for {
 		go handleSocks(sockOne, sockTwo)
 		go handleSocks(sockTwo, sockOne)
