@@ -2,6 +2,7 @@ package SocketPipe
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
 	"sync"
 )
@@ -21,14 +22,18 @@ func Pipe(sockOne net.Conn, sockTwo net.Conn) {
 func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
 	var buffer []byte
 	var wg sync.WaitGroup
+	ch := make(chan []byte)
 	for {
 		wg.Add(1)
-		go read(&wg, sockOne, buffer)
+		go read(&wg, sockOne, buffer, ch)
 		wg.Wait()
+		buffer = <-ch
 		sockTwo.Write(buffer)
 	}
 }
-func read(wg *sync.WaitGroup, sock net.Conn, buffer []byte) {
-	sock.Read(buffer)
-	wg.Done()
+func read(wg *sync.WaitGroup, sock net.Conn, buffer []byte, ch chan []byte) {
+	defer wg.Done()
+	buffer, err := ioutil.ReadAll(sock)
+	ch <- buffer
+	check(err)
 }
