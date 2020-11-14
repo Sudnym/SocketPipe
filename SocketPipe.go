@@ -17,7 +17,7 @@ func Pipe(sockOne net.Conn, sockTwo net.Conn) {
 	fmt.Println(sockOne.RemoteAddr())
 	fmt.Println(sockTwo.RemoteAddr())
 	go handleSocks(sockOne, sockTwo)
-	go handleSocks(sockTwo, sockOne)
+	handleSocks(sockTwo, sockOne)
 }
 func handleSocks(sockOne net.Conn, sockTwo net.Conn) {
 	var buffer []byte
